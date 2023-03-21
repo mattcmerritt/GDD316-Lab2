@@ -30,4 +30,25 @@ public class LevelGeneration : MonoBehaviour
             }
         }
     }
+
+    // Accessor methods to determine where to spawn the player and goal
+    public int GetMapWidth()
+    {
+        return MapWidthInTiles;
+    }
+
+    public int GetMapDepth()
+    {
+        return MapDepthInTiles;
+    }
+
+    public int GetTileWidth()
+    {
+        return (int) TilePrefab.GetComponent<MeshRenderer>().bounds.size.x;
+    }
+
+    public int GetTileDepth()
+    {
+        return (int) TilePrefab.GetComponent<MeshRenderer>().bounds.size.z;
+    }
 }
