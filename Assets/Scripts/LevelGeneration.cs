@@ -9,6 +9,7 @@ public class LevelGeneration : MonoBehaviour
 {
     [SerializeField] private int MapWidthInTiles, MapDepthInTiles;
     [SerializeField] private GameObject TilePrefab;
+    [SerializeField] private bool RandomSeed;
 
     private void Start()
     {
@@ -20,6 +21,13 @@ public class LevelGeneration : MonoBehaviour
         Vector3 tileSize = TilePrefab.GetComponent<MeshRenderer>().bounds.size;
         int tileWidth = (int)tileSize.x;
         int tileDepth = (int)tileSize.z;
+
+        // Randomizing the tile seeds
+        if (RandomSeed)
+        {
+            TileGeneration tg = TilePrefab.GetComponent<TileGeneration>();
+            tg.RandomizeLevelSeeds();
+        }
 
         for (int xTileIndex = 0; xTileIndex < MapWidthInTiles; xTileIndex++)
         {

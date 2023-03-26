@@ -23,7 +23,7 @@ public class TileGeneration : MonoBehaviour
     [SerializeField] private TerrainType[] TerrainTypes;
     [SerializeField] private float HeightMultiplier;
     [SerializeField] private AnimationCurve HeightCurve;
-    [SerializeField] private Wave[] waves;
+    [SerializeField] private Wave[] Waves;
 
     private void Start()
     {
@@ -39,7 +39,7 @@ public class TileGeneration : MonoBehaviour
         float offsetX = -transform.position.x;
         float offsetZ = -transform.position.z;
 
-        float[,] heightMap = NoiseMapGeneration.GenerateNoiseMap(tileDepth, tileWidth, MapScale, offsetX, offsetZ, waves);
+        float[,] heightMap = NoiseMapGeneration.GenerateNoiseMap(tileDepth, tileWidth, MapScale, offsetX, offsetZ, Waves);
 
         Texture2D tileTexture = BuildTexture(heightMap);
         MeshRenderer.material.mainTexture = tileTexture;
@@ -107,5 +107,13 @@ public class TileGeneration : MonoBehaviour
         MeshFilter.mesh.RecalculateBounds();
         MeshFilter.mesh.RecalculateNormals();
         MeshCollider.sharedMesh = MeshFilter.mesh;
+    }
+
+    public void RandomizeLevelSeeds()
+    {
+        foreach (Wave wave in Waves)
+        {
+            wave.seed = Random.Range(0, 10000);
+        }
     }
 }

@@ -478,6 +478,7 @@ MonoBehaviour:
   MapWidthInTiles: 10
   MapDepthInTiles: 10
   TilePrefab: {fileID: 1732588527789496859, guid: 9d09026184288c9449789a062ae8b374, type: 3}
+  RandomSeed: 1
 --- !u!4 &1856777145
 Transform:
   m_ObjectHideFlags: 0
