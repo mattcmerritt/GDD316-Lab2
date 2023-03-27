@@ -152,8 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4703de211c5e7e34c917ebd39c690d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapWidthInTiles: 2
-  MapDepthInTiles: 2
+  MapWidthInTiles: 5
+  MapDepthInTiles: 5
   TilePrefab: {fileID: 8456296939182147124, guid: 568ea8fde29b30846b7d03ada9ca0fa3, type: 3}
   RandomSeed: 1
   PathGeneration: {fileID: 274265872}

@@ -49,8 +49,6 @@ public class PathedTileGeneration : MonoBehaviour
         int tileDepth = heightMap.GetLength(0);
         int tileWidth = heightMap.GetLength(1);
 
-        Debug.Log($"Building initial texture");
-
         Color[] colorMap = new Color[tileDepth * tileWidth];
         for (int zIndex = 0; zIndex < tileDepth; zIndex++)
         {
@@ -80,7 +78,6 @@ public class PathedTileGeneration : MonoBehaviour
 
         int offsetX = (int)(transform.position.x / tileWorldSize.x * tilePixelWidth);
         int offsetZ = (int)(transform.position.z / tileWorldSize.z * tilePixelDepth);
-        Debug.Log($"{offsetX}, {offsetZ}");
 
         for (int zIndex = 0; zIndex < tilePixelDepth; zIndex++)
         {

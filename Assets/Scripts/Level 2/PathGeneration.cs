@@ -29,6 +29,7 @@ public class Point
 public class PathGeneration : MonoBehaviour
 {
     private MazeTile[,] Maze;
+    public const int PixelsPerTile = 2;
 
     /*
     private void Start()
@@ -44,7 +45,7 @@ public class PathGeneration : MonoBehaviour
     public void GenerateMaze(int mapDepth, int mapWidth, int textureDepth, int textureWidth)
     {
         // Creating a map of all walls
-        Maze = new MazeTile[mapDepth * textureDepth, mapWidth * textureWidth];
+        Maze = new MazeTile[mapDepth * textureDepth / PixelsPerTile, mapWidth * textureWidth / PixelsPerTile];
         for (int z = 0; z < Maze.GetLength(0); z++)
         {
             for (int x = 0; x < Maze.GetLength(1); x++)
@@ -240,12 +241,13 @@ public class PathGeneration : MonoBehaviour
     // Retrieve a single tile from the maze
     public MazeTile GetTile(Point location)
     {
+        Point scaledLocation = new Point(location.z / PixelsPerTile, location.x / PixelsPerTile);
         // out of bounds locations will give an invalid point
-        if (!PointInMaze(location))
+        if (!PointInMaze(scaledLocation))
         {
             return MazeTile.Invalid;
         }
 
-        return Maze[location.z, location.x];
+        return Maze[scaledLocation.z, scaledLocation.x];
     }
 }
