@@ -30,6 +30,8 @@ public class PathGeneration : MonoBehaviour
 {
     private MazeTile[,] Maze;
     public const int PixelsPerTile = 2;
+    private float[,] HeightMap;
+    private float MountainHeight;
 
     /*
     private void Start()
@@ -42,8 +44,12 @@ public class PathGeneration : MonoBehaviour
     // Creates a single maze that can be applied as a path to many different tiles
     // mapDepth and mapWidth are the dimensions of the level in tiles
     // textureDepth and textureWidth are the dimensions of the texture map for a single tile
-    public void GenerateMaze(int mapDepth, int mapWidth, int textureDepth, int textureWidth)
+    public void GenerateMaze(int mapDepth, int mapWidth, int textureDepth, int textureWidth, float[,] heightMap, float mountainHeight)
     {
+        // Saving height map data for later usage
+        HeightMap = heightMap;
+        MountainHeight = mountainHeight;
+
         // Creating a map of all walls
         Maze = new MazeTile[mapDepth * textureDepth / PixelsPerTile, mapWidth * textureWidth / PixelsPerTile];
         for (int z = 0; z < Maze.GetLength(0); z++)
@@ -144,7 +150,22 @@ public class PathGeneration : MonoBehaviour
             }
         }
 
-        return surroundingWalls >= 3 && hasClosedCorners;
+        // verify that the tiles we are looking at are not mountainous
+        Point unscaledLocation = new Point(location.z * PixelsPerTile, location.x * PixelsPerTile);
+        bool isMountainous = false;
+        for (int z = 0; z < PixelsPerTile; z++)
+        {
+            for (int x = 0; x < PixelsPerTile; x++)
+            {
+                Debug.Log($"Height at ({unscaledLocation.z + z}, {unscaledLocation.x + x}): {HeightMap[unscaledLocation.z + z, unscaledLocation.x + x]}");
+                if (HeightMap[unscaledLocation.z + z, unscaledLocation.x + x] >= MountainHeight) {
+                    isMountainous = true;
+                    Debug.LogError("Mountain detected!");
+                }
+            }
+        }
+
+        return surroundingWalls >= 3 && hasClosedCorners && !isMountainous;
     }
 
     // Fetch all of the neighboring tiles of a current location

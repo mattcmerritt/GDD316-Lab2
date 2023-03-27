@@ -19,6 +19,7 @@ public class PathedTileGeneration : MonoBehaviour
     [SerializeField] private PathGeneration PathGeneration;
     [SerializeField] private Color PathColor;
     private Texture2D UnpathedTexture;
+    private float[,] HeightMap;
 
     private void Start()
     {
@@ -36,12 +37,12 @@ public class PathedTileGeneration : MonoBehaviour
         float offsetX = -transform.position.x;
         float offsetZ = -transform.position.z;
 
-        float[,] heightMap = NoiseMapGeneration.GenerateNoiseMap(tileDepth, tileWidth, MapScale, offsetX, offsetZ, Waves);
+        HeightMap = NoiseMapGeneration.GenerateNoiseMap(tileDepth, tileWidth, MapScale, offsetX, offsetZ, Waves);
 
-        UnpathedTexture = BuildTexture(heightMap);
+        UnpathedTexture = BuildTexture(HeightMap);
         MeshRenderer.material.mainTexture = UnpathedTexture;
 
-        UpdateMeshVertices(heightMap);
+        UpdateMeshVertices(HeightMap);
     }
 
     private Texture2D BuildTexture(float[,] heightMap)
@@ -148,5 +149,25 @@ public class PathedTileGeneration : MonoBehaviour
     public float GetMapHeight()
     {
         return HeightMultiplier;
+    }
+
+    public Wave[] GetWaves()
+    {
+        return Waves;
+    }
+
+    public float GetMapScale()
+    {
+        return MapScale;
+    }
+
+    public TerrainType[] GetTerrainTypes()
+    {
+        return TerrainTypes;
+    }
+
+    public float[,] GetHeightMap()
+    {
+        return HeightMap;
     }
 }

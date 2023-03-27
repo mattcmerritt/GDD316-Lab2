@@ -135,7 +135,7 @@ MonoBehaviour:
     color: {r: 0.34117648, g: 0.47058824, b: 0.34117648, a: 0}
   - name: highlands
     height: 0.6
-    color: {r: 0.34281042, g: 0.4716981, b: 0.34042364, a: 0}
+    color: {r: 0.34117648, g: 0.47058824, b: 0.34117648, a: 0}
   - name: mountain
     height: 0.7
     color: {r: 0.3207547, g: 0.2903573, b: 0.26174796, a: 0}
@@ -177,12 +177,14 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   Waves:
-  - seed: 3635
+  - seed: 2278
     frequency: 1
     amplitude: 1
-  - seed: 6341
+  - seed: 1111
     frequency: 0.5
     amplitude: 2
-  - seed: 9122
+  - seed: 904
     frequency: 0.25
     amplitude: 4
+  PathGeneration: {fileID: 0}
+  PathColor: {r: 0, g: 0, b: 0, a: 0}
