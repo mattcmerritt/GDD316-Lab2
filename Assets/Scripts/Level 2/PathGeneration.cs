@@ -112,6 +112,8 @@ public class PathGeneration : MonoBehaviour
             }
         }
 
+        PrintAllTileData();
+
         Debug.Log($"Ended with {totalPathTiles} path tiles in maze ({(float)totalPathTiles / Maze.Length}% path)");
 
         Debug.Log(WriteMaze());
@@ -166,6 +168,7 @@ public class PathGeneration : MonoBehaviour
             }
         }
 
+        /*
         // verify that the tiles are not in the highlands height class
         int pixelZ = location.z * PixelsPerSquare;
         int pixelX = location.x * PixelsPerSquare;
@@ -187,6 +190,7 @@ public class PathGeneration : MonoBehaviour
         {
             return false;
         }
+        */
 
         return surroundingWalls >= 3 && hasClosedCorners;
     }
@@ -297,5 +301,34 @@ public class PathGeneration : MonoBehaviour
         }
 
         return Maze[scaledLocation.z, scaledLocation.x];
+    }
+
+    private void PrintAllTileData() 
+    {
+        for (int z = 0; z < MapDepth * TexturePixelDepth; z++) 
+        {
+            for (int x = 0; x < MapWidth * TexturePixelWidth; x++) 
+            {
+                int pathZ = z / PixelsPerSquare;
+                int pathX = x / PixelsPerSquare;
+
+                int localZ = z % TexturePixelDepth;
+                int localX = x % TexturePixelWidth;
+
+                PathedTileGeneration tile = Tiles[z / TexturePixelDepth + x / TexturePixelWidth * MapDepth];
+                float[,] tileHeightMap = tile.GetHeightMap();
+                Texture2D tileTexture = tile.GetTexture();
+                Color[] tileColorMap = tileTexture.GetPixels();
+
+                Debug.Log(
+                    $"Point: ({z}, {x})\n" +
+                    $"Local Point: ({localZ}, {localX})\n" +
+                    $"Path Point: ({pathZ}, {pathX})\n" +
+                    $"Tile: {tile.gameObject.name}\n" +
+                    $"Height: {tileHeightMap[tileHeightMap.GetLength(0) - localZ - 1, tileHeightMap.GetLength(1) - localX - 1]}\n" +
+                    $"Color: {tileColorMap[tileColorMap.Length - (localZ + localX * TexturePixelDepth) - 1]}"
+                );
+            }
+        }
     }
 }
