@@ -116,4 +116,9 @@ public class TileGeneration : MonoBehaviour
             wave.seed = Random.Range(0, 10000);
         }
     }
+
+    public float GetMapHeight()
+    {
+        return HeightMultiplier;
+    }
 }

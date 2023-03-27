@@ -6,9 +6,16 @@ public class LevelSetup : MonoBehaviour
 {
     [SerializeField] private LevelGeneration LevelGeneration;
     [SerializeField] private GameObject Player, Goal;
+    [SerializeField] private BoxCollider GoalCollider;
 
-    private bool PlayerLoaded, GoalLoaded;
-    [SerializeField] private float SpawnCheckHeight = 10f;
+    [SerializeField] private bool PlayerLoaded, GoalLoaded;
+    [SerializeField] private float SpawnCheckHeight;
+    [SerializeField] private TileGeneration TilePrefabGeneration;
+
+    private void Start()
+    {
+        SpawnCheckHeight = TilePrefabGeneration.GetMapHeight() + 1f;
+    }
 
     private void Update()
     {
@@ -16,7 +23,7 @@ public class LevelSetup : MonoBehaviour
         {
             Vector3 playerSpawnLocation = Vector3.up * SpawnCheckHeight;
             RaycastHit playerSpawnHit;
-            if (Physics.Raycast(playerSpawnLocation, Vector3.down, out playerSpawnHit, SpawnCheckHeight))
+            if (Physics.Raycast(playerSpawnLocation, Vector3.down, out playerSpawnHit, SpawnCheckHeight + 1f))
             {
                 Player.transform.position = playerSpawnHit.point + Vector3.up;
                 PlayerLoaded = true;
@@ -27,10 +34,11 @@ public class LevelSetup : MonoBehaviour
         {
             Vector3 goalSpawnLocation = new Vector3((LevelGeneration.GetMapWidth() - 1) * LevelGeneration.GetTileWidth(), SpawnCheckHeight, (LevelGeneration.GetMapDepth() - 1) * LevelGeneration.GetTileDepth());
             RaycastHit goalSpawnHit;
-            if (Physics.Raycast(goalSpawnLocation, Vector3.down, out goalSpawnHit, SpawnCheckHeight))
+            if (Physics.Raycast(goalSpawnLocation, Vector3.down, out goalSpawnHit, SpawnCheckHeight + 1f))
             {
                 Goal.transform.position = goalSpawnHit.point + Vector3.up;
                 GoalLoaded = true;
+                GoalCollider.enabled = true;
             }
         }
     }
