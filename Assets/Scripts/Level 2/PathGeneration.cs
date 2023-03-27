@@ -168,31 +168,27 @@ public class PathGeneration : MonoBehaviour
             }
         }
 
-        /*
         // verify that the tiles are not in the highlands height class
-        int pixelZ = location.z * PixelsPerSquare;
-        int pixelX = location.x * PixelsPerSquare;
-        PathedTileGeneration tile = Tiles[pixelZ / TexturePixelDepth + pixelX / TexturePixelWidth * MapDepth];
+        int worldZ = location.z * PixelsPerSquare;
+        int worldX = location.x * PixelsPerSquare;
 
-        // retrieving tile data
+        int localZ = worldZ % TexturePixelDepth;
+        int localX = worldX % TexturePixelWidth;
+
+        // fetching the data components from the correct tile
+        PathedTileGeneration tile = Tiles[worldZ / TexturePixelDepth + worldX / TexturePixelWidth * MapDepth];
         float[,] tileHeightMap = tile.GetHeightMap();
         Texture2D tileTexture = tile.GetTexture();
         Color[] tileColorMap = tileTexture.GetPixels();
-    
-        Debug.Log(
-            $"Point: ({location.z}, {location.x})\n" +
-            $"Tile: {tile.gameObject.name}\n" +
-            $"Height: {tileHeightMap[pixelZ % TexturePixelDepth, pixelX % TexturePixelWidth]}\n" +
-            $"Color: {tileColorMap[(pixelZ % TexturePixelDepth) + (pixelX % TexturePixelWidth) * TexturePixelDepth]}"
-        );
 
-        if (tileHeightMap[pixelZ % TexturePixelDepth, pixelX % TexturePixelWidth] > 0.6f) 
-        {
-            return false;
-        }
-        */
+        // for some reason, the dimensions are reversed for the tile's
+        // height map, texture, and color map
+        float height = tileHeightMap[tileHeightMap.GetLength(0) - localZ - 1, tileHeightMap.GetLength(1) - localX - 1];
 
-        return surroundingWalls >= 3 && hasClosedCorners;
+        // check if the ground is too steep for a road
+        bool isMountainous = height >= 0.5f;
+
+        return surroundingWalls >= 3 && hasClosedCorners && !isMountainous;
     }
 
     // Fetch all of the neighboring tiles of a current location
@@ -303,6 +299,7 @@ public class PathGeneration : MonoBehaviour
         return Maze[scaledLocation.z, scaledLocation.x];
     }
 
+    // Mostly used for testing, can be used to verify that all the maps are aligned
     private void PrintAllTileData() 
     {
         for (int z = 0; z < MapDepth * TexturePixelDepth; z++) 
