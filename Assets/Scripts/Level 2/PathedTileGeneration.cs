@@ -79,13 +79,31 @@ public class PathedTileGeneration : MonoBehaviour
         int offsetX = (int)(transform.position.x / tileWorldSize.x * tilePixelWidth);
         int offsetZ = (int)(transform.position.z / tileWorldSize.z * tilePixelDepth);
 
+        Color mountainColor = Color.black;
+        foreach (TerrainType t in TerrainTypes)
+        {
+            if (t.name == "mountain")
+            {
+                mountainColor = t.color;
+            }
+        }
+        Color snowColor = Color.black;
+        foreach (TerrainType t in TerrainTypes)
+        {
+            if (t.name == "snow")
+            {
+                snowColor = t.color;
+            }
+        }
+
         for (int zIndex = 0; zIndex < tilePixelDepth; zIndex++)
         {
             for (int xIndex = 0; xIndex < tilePixelWidth; xIndex++)
             {
                 int colorIndex = zIndex * tilePixelWidth + xIndex;
-                
-                if (PathGeneration.GetTile(new Point(offsetZ + zIndex, offsetX + xIndex)) == MazeTile.Path)
+
+                if (PathGeneration.GetTile(new Point(offsetZ + zIndex, offsetX + xIndex)) == MazeTile.Path && 
+                    !(ColorEquals(colorMap[colorMap.Length - colorIndex - 1], mountainColor) || ColorEquals(colorMap[colorMap.Length - colorIndex - 1], snowColor)))
                 {
                     colorMap[colorMap.Length - colorIndex - 1] = PathColor;
                 }
@@ -148,5 +166,14 @@ public class PathedTileGeneration : MonoBehaviour
     public float GetMapHeight()
     {
         return HeightMultiplier;
+    }
+
+    public bool ColorEquals(Color c1, Color c2)
+    {
+        float threshold = 0.001f;
+        return Mathf.Abs(c1.a - c2.a) < threshold &&
+            Mathf.Abs(c1.r - c2.r) < threshold &&
+            Mathf.Abs(c1.g - c2.g) < threshold &&
+            Mathf.Abs(c1.b - c2.b) < threshold;
     }
 }
