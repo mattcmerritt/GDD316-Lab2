@@ -60,10 +60,13 @@ public class PathGeneration : MonoBehaviour
         // Starting the path at (1, 1)
         // Maze[1, 1] = MazeTile.Path;
         tilesToVisit.Push(new Point(1, 1));
+        int totalPathTiles = 0;
 
         // loop to generate maze using DFS approach
         while (tilesToVisit.Count > 0)
         {
+            Debug.Log($"Currently {totalPathTiles} path tiles in maze ({(float) totalPathTiles / Maze.Length}% path)");
+
             // grab point off of candidate stack
             Point current = tilesToVisit.Pop();
 
@@ -71,6 +74,7 @@ public class PathGeneration : MonoBehaviour
             if (TileCanBePath(current))
             {
                 Maze[current.z, current.x] = MazeTile.Path;
+                totalPathTiles++;
             }
             else
             {
