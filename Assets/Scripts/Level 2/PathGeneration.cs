@@ -103,13 +103,34 @@ public class PathGeneration : MonoBehaviour
             }
         }
 
-        List<Point> corners = GetNeighboringCornerTiles(location);
+        List<Point> corners = GetCornerTiles(location);
 
         // verify that all the corner tiles are walls (no diagonal paths)
         bool hasClosedCorners = true;
         foreach (Point corner in corners)
         {
-            if (Maze[corner.z, corner.x] == MazeTile.Path)
+            // if the corner is a wall, we do not need to check for a connection
+            if (Maze[corner.z, corner.x] == MazeTile.Wall)
+            {
+                continue;
+            }
+
+            // if the corner is not a wall, it needs to have at least one adjacent neighbor 
+            // also be on the path
+            bool hasAdjacentNeighbor = false;
+            foreach (Point neighbor in neighbors)
+            {
+                if ((corner.z == neighbor.z || corner.x == neighbor.x) && 
+                    Maze[neighbor.z, neighbor.x] == MazeTile.Path)
+                {
+                    hasAdjacentNeighbor = true;
+                }
+            }
+            
+            // if one of the corners is on the path and has no adjacent neighboring path
+            // adding the current tile to the path would create a diagonal path, which
+            // is not allowed
+            if (!hasAdjacentNeighbor)
             {
                 hasClosedCorners = false;
             }
@@ -146,7 +167,7 @@ public class PathGeneration : MonoBehaviour
 
     // Fetch all of the diagonally neighboring tiles of a current location
     // Note: does not include tiles that are out of bounds
-    private List<Point> GetNeighboringCornerTiles(Point location)
+    private List<Point> GetCornerTiles(Point location)
     {
         List<Point> corners = new List<Point>();
 
