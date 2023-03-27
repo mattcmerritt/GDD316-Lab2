@@ -29,18 +29,16 @@ public class Point
 public class PathGeneration : MonoBehaviour
 {
     private MazeTile[,] Maze;
-    public const int PixelsPerSquare = 2;
     private List<PathedTileGeneration> Tiles;
     private int TexturePixelDepth, TexturePixelWidth;
     private int MapDepth, MapWidth;
 
-    /*
-    private void Start()
-    {
-        GenerateMaze(1, 1, 11, 11); // single tile, 11px x 11px texture
-        Debug.Log(WriteMaze());
-    }
-    */
+    // Configurable values
+    [SerializeField, Range(0f, 1f)] private float MinPathPercent = 0.4f; // The minimum percentage of the map that should be path
+    [SerializeField] public const int PixelsPerSquare = 2; // The number of pixels on a texture that each road square takes up
+    [SerializeField, Range(0f, 1f)] private float MaxPathHeight = 0.5f; // The height below which paths are allowed
+    [SerializeField] private int PathStartsRemaining = 20; // The amount of tries the generation has to add new paths before giving up
+
 
     // Creates a single maze that can be applied as a path to many different tiles
     // mapDepth and mapWidth are the dimensions of the level in tiles
@@ -81,41 +79,53 @@ public class PathGeneration : MonoBehaviour
         // Maze[1, 1] = MazeTile.Path;
         tilesToVisit.Push(new Point(1, 1));
         int totalPathTiles = 0;
-
-        // loop to generate maze using DFS approach
-        while (tilesToVisit.Count > 0)
+        float pathPercent = (float) totalPathTiles / Maze.Length;
+        while (pathPercent < MinPathPercent && PathStartsRemaining >= 0) 
         {
-            // grab point off of candidate stack
-            Point current = tilesToVisit.Pop();
+            // loop to generate maze using DFS approach
+            while (tilesToVisit.Count > 0)
+            {
+                // grab point off of candidate stack
+                Point current = tilesToVisit.Pop();
 
-            // verify that the point can be on the path, change it if so
-            if (TileCanBePath(current))
-            {
-                Maze[current.z, current.x] = MazeTile.Path;
-                totalPathTiles++;
-            }
-            else
-            {
-                continue; // move to next point, do not process neighbors of walls
-            }
-
-            // add the surrounding points onto the stack to keep processing the path
-            List<Point> neighbors = RandomizeList(GetNeighboringTiles(current));
-            
-            // only include points that could potentially be path
-            foreach (Point location in neighbors)
-            {
-                if (TileCanBePath(location))
+                // verify that the point can be on the path, change it if so
+                if (TileCanBePath(current))
                 {
-                    tilesToVisit.Push(location);
+                    Maze[current.z, current.x] = MazeTile.Path;
+                    totalPathTiles++;
                 }
+                else
+                {
+                    continue; // move to next point, do not process neighbors of walls
+                }
+
+                // add the surrounding points onto the stack to keep processing the path
+                List<Point> neighbors = RandomizeList(GetNeighboringTiles(current));
+                
+                // only include points that could potentially be path
+                foreach (Point location in neighbors)
+                {
+                    if (TileCanBePath(location))
+                    {
+                        tilesToVisit.Push(location);
+                    }
+                }
+            }
+
+            // recalculate path percentage
+            pathPercent = (float) totalPathTiles / Maze.Length;
+            
+            // if not enough path has been drawn, randomly put a value on the stack 
+            // the algorithm will try to generate from the random point, or generate new ones
+            if (pathPercent < MinPathPercent) 
+            {
+                tilesToVisit.Push(new Point(Random.Range(1, Maze.GetLength(0) - 1), Random.Range(1, Maze.GetLength(1) - 1)));
+                PathStartsRemaining--; // prevent infinite looping
             }
         }
 
-        PrintAllTileData();
-
-        Debug.Log($"Ended with {totalPathTiles} path tiles in maze ({(float)totalPathTiles / Maze.Length}% path)");
-
+        Debug.Log($"Ended with {totalPathTiles} path tiles in maze ({pathPercent}% path)");
+        // PrintAllTileData();
         Debug.Log(WriteMaze());
     }
 
@@ -186,7 +196,7 @@ public class PathGeneration : MonoBehaviour
         float height = tileHeightMap[tileHeightMap.GetLength(0) - localZ - 1, tileHeightMap.GetLength(1) - localX - 1];
 
         // check if the ground is too steep for a road
-        bool isMountainous = height >= 0.5f;
+        bool isMountainous = height >= MaxPathHeight;
 
         return surroundingWalls >= 3 && hasClosedCorners && !isMountainous;
     }
