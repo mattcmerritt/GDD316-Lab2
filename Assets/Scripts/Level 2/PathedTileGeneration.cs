@@ -16,9 +16,14 @@ public class PathedTileGeneration : MonoBehaviour
     [SerializeField] private float HeightMultiplier;
     [SerializeField] private AnimationCurve HeightCurve;
     [SerializeField] private Wave[] Waves;
+    [SerializeField] private PathGeneration PathGeneration;
+    [SerializeField] private Color PathColor;
+    private Texture2D UnpathedTexture;
 
     private void Start()
     {
+        // path generator is shared and needs to be found in the scene
+        PathGeneration = FindObjectOfType<PathGeneration>();
         GenerateTile();
     }
 
@@ -33,8 +38,8 @@ public class PathedTileGeneration : MonoBehaviour
 
         float[,] heightMap = NoiseMapGeneration.GenerateNoiseMap(tileDepth, tileWidth, MapScale, offsetX, offsetZ, Waves);
 
-        Texture2D tileTexture = BuildTexture(heightMap);
-        MeshRenderer.material.mainTexture = tileTexture;
+        UnpathedTexture = BuildTexture(heightMap);
+        MeshRenderer.material.mainTexture = UnpathedTexture;
 
         UpdateMeshVertices(heightMap);
     }
@@ -44,7 +49,7 @@ public class PathedTileGeneration : MonoBehaviour
         int tileDepth = heightMap.GetLength(0);
         int tileWidth = heightMap.GetLength(1);
 
-        // Debug.Log($"Depth: {tileDepth}, Width: {tileWidth}");
+        Debug.Log($"Building initial texture");
 
         Color[] colorMap = new Color[tileDepth * tileWidth];
         for (int zIndex = 0; zIndex < tileDepth; zIndex++)
@@ -64,6 +69,38 @@ public class PathedTileGeneration : MonoBehaviour
         tileTexture.Apply();
 
         return tileTexture;
+    }
+
+    public IEnumerator AddPathToTexture(int tilePixelDepth, int tilePixelWidth, Vector3 tileWorldSize)
+    {
+        // wait until the colored texture is built
+        yield return new WaitUntil(() => UnpathedTexture != null);
+
+        Color[] colorMap = UnpathedTexture.GetPixels();
+
+        int offsetX = (int)(transform.position.x / tileWorldSize.x * tilePixelWidth);
+        int offsetZ = (int)(transform.position.z / tileWorldSize.z * tilePixelDepth);
+        Debug.Log($"{offsetX}, {offsetZ}");
+
+        for (int zIndex = 0; zIndex < tilePixelDepth; zIndex++)
+        {
+            for (int xIndex = 0; xIndex < tilePixelWidth; xIndex++)
+            {
+                int colorIndex = zIndex * tilePixelWidth + xIndex;
+                
+                if (PathGeneration.GetTile(new Point(offsetZ + zIndex, offsetX + xIndex)) == MazeTile.Path)
+                {
+                    colorMap[colorMap.Length - colorIndex - 1] = PathColor;
+                }
+            }
+        }
+
+        Texture2D tileTexture = new Texture2D(tilePixelWidth, tilePixelDepth);
+        tileTexture.wrapMode = TextureWrapMode.Clamp;
+        tileTexture.SetPixels(colorMap);
+        tileTexture.Apply();
+
+        MeshRenderer.material.mainTexture = tileTexture;
     }
 
     private TerrainType ChooseTerrainType(float height)

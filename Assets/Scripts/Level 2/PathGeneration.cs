@@ -7,7 +7,8 @@ using UnityEngine;
 public enum MazeTile
 {
     Path = 'O',
-    Wall = 'X'
+    Wall = 'X',
+    Invalid = '?'
 }
 
 // Point class to represent locations in the maze
@@ -29,11 +30,13 @@ public class PathGeneration : MonoBehaviour
 {
     private MazeTile[,] Maze;
 
+    /*
     private void Start()
     {
         GenerateMaze(1, 1, 11, 11); // single tile, 11px x 11px texture
         Debug.Log(WriteMaze());
     }
+    */
 
     // Creates a single maze that can be applied as a path to many different tiles
     // mapDepth and mapWidth are the dimensions of the level in tiles
@@ -218,7 +221,7 @@ public class PathGeneration : MonoBehaviour
     }
 
     // Writes the current maze to a string to be checked
-    private string WriteMaze()
+    public string WriteMaze()
     {
         string maze = "";
 
@@ -232,5 +235,17 @@ public class PathGeneration : MonoBehaviour
         }
 
         return maze;
+    }
+
+    // Retrieve a single tile from the maze
+    public MazeTile GetTile(Point location)
+    {
+        // out of bounds locations will give an invalid point
+        if (!PointInMaze(location))
+        {
+            return MazeTile.Invalid;
+        }
+
+        return Maze[location.z, location.x];
     }
 }
