@@ -34,11 +34,6 @@ public class PathGeneration : MonoBehaviour
     private int TexturePixelDepth, TexturePixelWidth;
     private int MapDepth, MapWidth;
 
-    // temporary instance variables needed for coroutine to force program to wait for components to load
-    private float[,] TileHeightMap;
-    private Texture2D TileTexture;
-    private Color[] TileColorMap;
-
     /*
     private void Start()
     {
@@ -50,8 +45,18 @@ public class PathGeneration : MonoBehaviour
     // Creates a single maze that can be applied as a path to many different tiles
     // mapDepth and mapWidth are the dimensions of the level in tiles
     // textureDepth and textureWidth are the dimensions of the texture map for a single tile
-    public void GenerateMaze(int mapDepth, int mapWidth, int textureDepth, int textureWidth, List<PathedTileGeneration> tiles)
+    public IEnumerator GenerateMaze(int mapDepth, int mapWidth, int textureDepth, int textureWidth, List<PathedTileGeneration> tiles)
     {
+        // only allow the maze to start generating if every tile in the tiles list is configured
+        yield return new WaitUntil(() => {
+            foreach (PathedTileGeneration tile in tiles) {
+                if (tile.GetHeightMap() == null || tile.GetTexture() == null) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
         // Saving list of all tiles for later use
         Tiles = tiles;
         MapDepth = mapDepth;
@@ -108,6 +113,8 @@ public class PathGeneration : MonoBehaviour
         }
 
         Debug.Log($"Ended with {totalPathTiles} path tiles in maze ({(float)totalPathTiles / Maze.Length}% path)");
+
+        Debug.Log(WriteMaze());
     }
 
     // Check that a wall tile can be replaced by a path tile
@@ -164,9 +171,22 @@ public class PathGeneration : MonoBehaviour
         int pixelX = location.x * PixelsPerSquare;
         PathedTileGeneration tile = Tiles[pixelZ / TexturePixelDepth + pixelX / TexturePixelWidth * MapDepth];
 
-        StartCoroutine(LoadTileComponents(tile));
+        // retrieving tile data
+        float[,] tileHeightMap = tile.GetHeightMap();
+        Texture2D tileTexture = tile.GetTexture();
+        Color[] tileColorMap = tileTexture.GetPixels();
     
-        Debug.Log($"Point: ({location.z}, {location.x}), Tile: {tile.gameObject.name}, Height: {TileHeightMap[pixelZ, pixelX]}, Color: {TileColorMap[pixelZ + pixelX * TexturePixelDepth]}");
+        Debug.Log(
+            $"Point: ({location.z}, {location.x})\n" +
+            $"Tile: {tile.gameObject.name}\n" +
+            $"Height: {tileHeightMap[pixelZ % TexturePixelDepth, pixelX % TexturePixelWidth]}\n" +
+            $"Color: {tileColorMap[(pixelZ % TexturePixelDepth) + (pixelX % TexturePixelWidth) * TexturePixelDepth]}"
+        );
+
+        if (tileHeightMap[pixelZ % TexturePixelDepth, pixelX % TexturePixelWidth] > 0.6f) 
+        {
+            return false;
+        }
 
         return surroundingWalls >= 3 && hasClosedCorners;
     }
@@ -277,16 +297,5 @@ public class PathGeneration : MonoBehaviour
         }
 
         return Maze[scaledLocation.z, scaledLocation.x];
-    }
-
-    // Waits for tile data to load before attempting to access it
-    private IEnumerator LoadTileComponents(PathedTileGeneration tile) 
-    {
-        yield return new WaitUntil(() => tile.GetHeightMap() != null && tile.GetTexture() != null);
-
-        // once the data has loaded, put the proper data into the temporary instance values
-        TileHeightMap = tile.GetHeightMap();
-        TileTexture = tile.GetTexture();
-        TileColorMap = TileTexture.GetPixels();
     }
 }

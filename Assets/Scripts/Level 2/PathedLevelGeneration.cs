@@ -28,8 +28,7 @@ public class PathedLevelGeneration : MonoBehaviour
         int tileWidth = tileDepth;
 
         // generating the path map
-        PathGeneration.GenerateMaze(MapDepthInTiles, MapWidthInTiles, tileDepth, tileWidth, GeneratedTiles);
-        Debug.Log(PathGeneration.WriteMaze());
+        StartCoroutine(PathGeneration.GenerateMaze(MapDepthInTiles, MapWidthInTiles, tileDepth, tileWidth, GeneratedTiles));
 
         // reapplying the maze to the tile textures
         Vector3 tileSize = TilePrefab.GetComponent<MeshRenderer>().bounds.size;
