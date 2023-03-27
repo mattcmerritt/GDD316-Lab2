@@ -29,7 +29,15 @@ public class Point
 public class PathGeneration : MonoBehaviour
 {
     private MazeTile[,] Maze;
-    public const int PixelsPerTile = 2;
+    public const int PixelsPerSquare = 2;
+    private List<PathedTileGeneration> Tiles;
+    private int TexturePixelDepth, TexturePixelWidth;
+    private int MapDepth, MapWidth;
+
+    // temporary instance variables needed for coroutine to force program to wait for components to load
+    private float[,] TileHeightMap;
+    private Texture2D TileTexture;
+    private Color[] TileColorMap;
 
     /*
     private void Start()
@@ -42,10 +50,17 @@ public class PathGeneration : MonoBehaviour
     // Creates a single maze that can be applied as a path to many different tiles
     // mapDepth and mapWidth are the dimensions of the level in tiles
     // textureDepth and textureWidth are the dimensions of the texture map for a single tile
-    public void GenerateMaze(int mapDepth, int mapWidth, int textureDepth, int textureWidth)
+    public void GenerateMaze(int mapDepth, int mapWidth, int textureDepth, int textureWidth, List<PathedTileGeneration> tiles)
     {
+        // Saving list of all tiles for later use
+        Tiles = tiles;
+        MapDepth = mapDepth;
+        MapWidth = mapWidth;
+        TexturePixelDepth = textureDepth;
+        TexturePixelWidth = textureWidth;
+
         // Creating a map of all walls
-        Maze = new MazeTile[mapDepth * textureDepth / PixelsPerTile, mapWidth * textureWidth / PixelsPerTile];
+        Maze = new MazeTile[mapDepth * textureDepth / PixelsPerSquare, mapWidth * textureWidth / PixelsPerSquare];
         for (int z = 0; z < Maze.GetLength(0); z++)
         {
             for (int x = 0; x < Maze.GetLength(1); x++)
@@ -143,6 +158,15 @@ public class PathGeneration : MonoBehaviour
                 hasClosedCorners = false;
             }
         }
+
+        // verify that the tiles are not in the highlands height class
+        int pixelZ = location.z * PixelsPerSquare;
+        int pixelX = location.x * PixelsPerSquare;
+        PathedTileGeneration tile = Tiles[pixelZ / TexturePixelDepth + pixelX / TexturePixelWidth * MapDepth];
+
+        StartCoroutine(LoadTileComponents(tile));
+    
+        Debug.Log($"Point: ({location.z}, {location.x}), Tile: {tile.gameObject.name}, Height: {TileHeightMap[pixelZ, pixelX]}, Color: {TileColorMap[pixelZ + pixelX * TexturePixelDepth]}");
 
         return surroundingWalls >= 3 && hasClosedCorners;
     }
@@ -245,7 +269,7 @@ public class PathGeneration : MonoBehaviour
     // Retrieve a single tile from the maze
     public MazeTile GetTile(Point location)
     {
-        Point scaledLocation = new Point(location.z / PixelsPerTile, location.x / PixelsPerTile);
+        Point scaledLocation = new Point(location.z / PixelsPerSquare, location.x / PixelsPerSquare);
         // out of bounds locations will give an invalid point
         if (!PointInMaze(scaledLocation))
         {
@@ -253,5 +277,16 @@ public class PathGeneration : MonoBehaviour
         }
 
         return Maze[scaledLocation.z, scaledLocation.x];
+    }
+
+    // Waits for tile data to load before attempting to access it
+    private IEnumerator LoadTileComponents(PathedTileGeneration tile) 
+    {
+        yield return new WaitUntil(() => tile.GetHeightMap() != null && tile.GetTexture() != null);
+
+        // once the data has loaded, put the proper data into the temporary instance values
+        TileHeightMap = tile.GetHeightMap();
+        TileTexture = tile.GetTexture();
+        TileColorMap = TileTexture.GetPixels();
     }
 }

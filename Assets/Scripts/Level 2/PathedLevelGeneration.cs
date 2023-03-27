@@ -13,7 +13,7 @@ public class PathedLevelGeneration : MonoBehaviour
     [SerializeField] private PathGeneration PathGeneration;
 
     // list of all tiles, used to reapply textures with paths
-    private List<PathedTileGeneration> GeneratedTiles;
+    [SerializeField] private List<PathedTileGeneration> GeneratedTiles;
 
     private void Start()
     {
@@ -28,7 +28,7 @@ public class PathedLevelGeneration : MonoBehaviour
         int tileWidth = tileDepth;
 
         // generating the path map
-        PathGeneration.GenerateMaze(MapDepthInTiles, MapWidthInTiles, tileDepth, tileWidth);
+        PathGeneration.GenerateMaze(MapDepthInTiles, MapWidthInTiles, tileDepth, tileWidth, GeneratedTiles);
         Debug.Log(PathGeneration.WriteMaze());
 
         // reapplying the maze to the tile textures
@@ -58,6 +58,7 @@ public class PathedLevelGeneration : MonoBehaviour
             {
                 Vector3 tilePosition = new Vector3(transform.position.x + xTileIndex * tileWidth, transform.position.y, transform.position.z + zTileIndex * tileDepth);
                 GameObject tile = Instantiate(TilePrefab, tilePosition, Quaternion.identity);
+                tile.name += $" {zTileIndex} {xTileIndex}";
                 GeneratedTiles.Add(tile.GetComponent<PathedTileGeneration>());
             }
         }
