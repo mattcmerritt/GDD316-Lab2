@@ -19,6 +19,7 @@ public class PathedTileGeneration : MonoBehaviour
     [SerializeField] private PathGeneration PathGeneration;
     [SerializeField] private Color PathColor;
     private Texture2D UnpathedTexture;
+    private float[,] HeightMap;
 
     private void Start()
     {
@@ -36,12 +37,12 @@ public class PathedTileGeneration : MonoBehaviour
         float offsetX = -transform.position.x;
         float offsetZ = -transform.position.z;
 
-        float[,] heightMap = NoiseMapGeneration.GenerateNoiseMap(tileDepth, tileWidth, MapScale, offsetX, offsetZ, Waves);
+        HeightMap = NoiseMapGeneration.GenerateNoiseMap(tileDepth, tileWidth, MapScale, offsetX, offsetZ, Waves);
 
-        UnpathedTexture = BuildTexture(heightMap);
+        UnpathedTexture = BuildTexture(HeightMap);
         MeshRenderer.material.mainTexture = UnpathedTexture;
 
-        UpdateMeshVertices(heightMap);
+        UpdateMeshVertices(HeightMap);
     }
 
     private Texture2D BuildTexture(float[,] heightMap)
@@ -60,6 +61,8 @@ public class PathedTileGeneration : MonoBehaviour
                 colorMap[colorIndex] = terrainType.color;
             }
         }
+
+        Debug.LogWarning($"Inital Build:\n\tFirst: {colorMap[0]}, Height = {heightMap[0, 0]}\n\tLast: {colorMap[colorMap.Length - 1]}, Height = {heightMap[10, 10]}");
 
         Texture2D tileTexture = new Texture2D(tileWidth, tileDepth);
         tileTexture.wrapMode = TextureWrapMode.Clamp;
@@ -91,6 +94,8 @@ public class PathedTileGeneration : MonoBehaviour
                 }
             }
         }
+
+        Debug.LogWarning($"Path Build:\n\tFirst: {colorMap[0]}, Height = {HeightMap[0, 0]}\n\tLast: {colorMap[colorMap.Length - 1]}, Height = {HeightMap[10, 10]}");
 
         Texture2D tileTexture = new Texture2D(tilePixelWidth, tilePixelDepth);
         tileTexture.wrapMode = TextureWrapMode.Clamp;

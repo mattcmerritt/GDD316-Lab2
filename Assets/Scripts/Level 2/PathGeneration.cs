@@ -65,8 +65,6 @@ public class PathGeneration : MonoBehaviour
         // loop to generate maze using DFS approach
         while (tilesToVisit.Count > 0)
         {
-            Debug.Log($"Currently {totalPathTiles} path tiles in maze ({(float) totalPathTiles / Maze.Length}% path)");
-
             // grab point off of candidate stack
             Point current = tilesToVisit.Pop();
 
@@ -93,6 +91,8 @@ public class PathGeneration : MonoBehaviour
                 }
             }
         }
+
+        Debug.Log($"Ended with {totalPathTiles} path tiles in maze ({(float)totalPathTiles / Maze.Length}% path)");
     }
 
     // Check that a wall tile can be replaced by a path tile
@@ -230,7 +230,7 @@ public class PathGeneration : MonoBehaviour
     {
         string maze = "";
 
-        for (int z = 0; z < Maze.GetLength(0); z++)
+        for (int z = Maze.GetLength(0) - 1; z >= 0; z--)
         {
             for (int x = 0; x < Maze.GetLength(1); x++)
             {
