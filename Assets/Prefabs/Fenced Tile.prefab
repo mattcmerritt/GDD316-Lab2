@@ -14,7 +14,8 @@ GameObject:
   - component: {fileID: 5084645578901681087}
   - component: {fileID: 5084645578901681080}
   - component: {fileID: 6505680090493537751}
-  m_Layer: 0
+  - component: {fileID: 3025851746482207799}
+  m_Layer: 8
   m_Name: Fenced Tile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,16 +178,30 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   Waves:
-  - seed: 2479
+  - seed: 7253
     frequency: 1
     amplitude: 1
-  - seed: 6770
+  - seed: 5134
     frequency: 0.5
     amplitude: 2
-  - seed: 57
+  - seed: 1475
     frequency: 0.25
     amplitude: 4
   FencedIn: 0
   FencePostPrefab: {fileID: 2590554420807097801, guid: df6c58fc686d1904fa993e4db6d69df5, type: 3}
   DepthwiseFenceWallPrefab: {fileID: 7605717238653070136, guid: dbbf16961ebbef446a96dc788564f99e, type: 3}
   WidthwiseFenceWallPrefab: {fileID: 7232342068925146138, guid: dcba633bcc680ca4299fecd97bf451b9, type: 3}
+  SafetyBox: {fileID: 3025851746482207799}
+--- !u!65 &3025851746482207799
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5084645578901681086}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Size: {x: 10, y: 100, z: 10}
+  m_Center: {x: 0, y: 40, z: 0}

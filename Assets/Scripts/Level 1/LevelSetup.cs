@@ -25,7 +25,7 @@ public class LevelSetup : MonoBehaviour
             RaycastHit playerSpawnHit;
             if (Physics.Raycast(playerSpawnLocation, Vector3.down, out playerSpawnHit, SpawnCheckHeight + 1f))
             {
-                Player.transform.position = playerSpawnHit.point + Vector3.up;
+                Player.transform.position = playerSpawnHit.point + Vector3.up * 2f;
                 PlayerLoaded = true;
             }
         }

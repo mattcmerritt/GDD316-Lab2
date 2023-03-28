@@ -20,6 +20,7 @@ public class FenceTileGeneration : MonoBehaviour
     // fence info
     public bool FencedIn;
     [SerializeField] private GameObject FencePostPrefab, DepthwiseFenceWallPrefab, WidthwiseFenceWallPrefab;
+    [SerializeField] private BoxCollider SafetyBox;
 
     private void Start()
     {
@@ -45,6 +46,9 @@ public class FenceTileGeneration : MonoBehaviour
         // adding fence posts
         if (FencedIn)
         {
+            // enable the safety box
+            SafetyBox.enabled = true;
+
             // fence post vertex locations in clockwise order
             Vector2Int[] postLocations =
             {

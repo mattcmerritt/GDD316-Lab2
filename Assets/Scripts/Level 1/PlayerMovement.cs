@@ -10,6 +10,9 @@ public class PlayerMovement : MonoBehaviour
     private CharacterController Controller;
     [SerializeField, Range(0, 20)] private float MoveSpeed = 5f;
     [SerializeField, Range(0, 15)] private float Sensitivity = 1.0f;
+    [SerializeField] private bool OnGround;
+    [SerializeField] private Rigidbody Rigidbody;
+    [SerializeField, Range(0f, 200f)] private float JumpForce;
 
     // Camera information
     [SerializeField] private GameObject CameraObject;
@@ -47,6 +50,11 @@ public class PlayerMovement : MonoBehaviour
         Vector3 movement = (normalizedInput.z * transform.forward) + (normalizedInput.x * transform.right);
         // Applying movement and speed
         transform.position += movement * Time.deltaTime * MoveSpeed;
+
+        if (Input.GetKeyDown(KeyCode.Space) && OnGround)
+        {
+            Rigidbody.velocity = Vector3.up * JumpForce;
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -57,6 +65,27 @@ public class PlayerMovement : MonoBehaviour
 
             int index = SceneManager.GetActiveScene().buildIndex;
             SceneManager.LoadScene(index + 1);
+        }
+
+        if (collision.collider.gameObject.name.Contains("Tile"))
+        {
+            OnGround = true;
+        }
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (collision.collider.gameObject.name.Contains("Tile"))
+        {
+            OnGround = true;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.collider.gameObject.name.Contains("Tile"))
+        {
+            OnGround = false;
         }
     }
 
