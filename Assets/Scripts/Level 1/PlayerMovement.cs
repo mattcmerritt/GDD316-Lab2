@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -53,6 +54,9 @@ public class PlayerMovement : MonoBehaviour
         if (collision.collider.gameObject.name == "Goal")
         {
             Debug.Log("You reached the goal!");
+
+            int index = SceneManager.GetActiveScene().buildIndex;
+            SceneManager.LoadScene(index + 1);
         }
     }
 
