@@ -177,14 +177,16 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   Waves:
-  - seed: 4592
+  - seed: 2479
     frequency: 1
     amplitude: 1
-  - seed: 2899
+  - seed: 6770
     frequency: 0.5
     amplitude: 2
-  - seed: 5163
+  - seed: 57
     frequency: 0.25
     amplitude: 4
   FencedIn: 0
   FencePostPrefab: {fileID: 2590554420807097801, guid: df6c58fc686d1904fa993e4db6d69df5, type: 3}
+  DepthwiseFenceWallPrefab: {fileID: 7605717238653070136, guid: dbbf16961ebbef446a96dc788564f99e, type: 3}
+  WidthwiseFenceWallPrefab: {fileID: 7232342068925146138, guid: dcba633bcc680ca4299fecd97bf451b9, type: 3}

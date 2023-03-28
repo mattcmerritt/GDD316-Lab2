@@ -19,7 +19,7 @@ public class FenceTileGeneration : MonoBehaviour
     
     // fence info
     public bool FencedIn;
-    [SerializeField] private GameObject FencePostPrefab;
+    [SerializeField] private GameObject FencePostPrefab, DepthwiseFenceWallPrefab, WidthwiseFenceWallPrefab;
 
     private void Start()
     {
@@ -46,7 +46,7 @@ public class FenceTileGeneration : MonoBehaviour
         if (FencedIn)
         {
             // fence post vertex locations in clockwise order
-            Vector2Int[] edgeLocations =
+            Vector2Int[] postLocations =
             {
                 new Vector2Int (0, 0),
                 new Vector2Int (0, 2),
@@ -70,6 +70,34 @@ public class FenceTileGeneration : MonoBehaviour
                 new Vector2Int (2, 0),
             };
 
+            // fence wall vertex locations
+            Vector2Int[] depthwiseWallLocations =
+            {
+                new Vector2Int (0, 1),
+                new Vector2Int (0, 3),
+                new Vector2Int (0, 5),
+                new Vector2Int (0, 7),
+                new Vector2Int (0, 9),
+                new Vector2Int (10, 9),
+                new Vector2Int (10, 7),
+                new Vector2Int (10, 5),
+                new Vector2Int (10, 3),
+                new Vector2Int (10, 1),
+            };
+            Vector2Int[] widthwiseWallLocations =
+            {
+                new Vector2Int (1, 10),
+                new Vector2Int (3, 10),
+                new Vector2Int (5, 10),
+                new Vector2Int (7, 10),
+                new Vector2Int (9, 10),
+                new Vector2Int (9, 0),
+                new Vector2Int (7, 0),
+                new Vector2Int (5, 0),
+                new Vector2Int (3, 0),
+                new Vector2Int (1, 0),
+            };
+
             // get the dimensions of the tile in world space
             Vector3 tileSize = MeshRenderer.bounds.size;
             int tileWorldWidth = (int) tileSize.x;
@@ -78,11 +106,26 @@ public class FenceTileGeneration : MonoBehaviour
             // update vertices list
             meshVertices = MeshFilter.mesh.vertices;
 
-            foreach (Vector2Int vertex in edgeLocations)
+            // placing fence posts
+            foreach (Vector2Int vertex in postLocations)
             {
                 Vector3 FencePostLocation = (transform.position) + (meshVertices[vertex.x + vertex.y * tileDepth]);
                 // Debug.Log($"Point: {vertex}, Location: {FencePostLocation}");
                 Instantiate(FencePostPrefab, FencePostLocation, Quaternion.identity);
+            }
+
+            // placing fence walls
+            foreach (Vector2Int vertex in depthwiseWallLocations)
+            {
+                Vector3 FenceLocation = (transform.position) + (meshVertices[vertex.x + vertex.y * tileDepth]);
+                // Debug.Log($"Point: {vertex}, Location: {FencePostLocation}");
+                Instantiate(DepthwiseFenceWallPrefab, FenceLocation, Quaternion.identity);
+            }
+            foreach (Vector2Int vertex in widthwiseWallLocations)
+            {
+                Vector3 FenceLocation = (transform.position) + (meshVertices[vertex.x + vertex.y * tileDepth]);
+                // Debug.Log($"Point: {vertex}, Location: {FencePostLocation}");
+                Instantiate(WidthwiseFenceWallPrefab, FenceLocation, Quaternion.identity);
             }
         }
     }
