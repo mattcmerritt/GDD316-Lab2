@@ -291,7 +291,7 @@ MonoBehaviour:
   MapWidthInTiles: 10
   MapDepthInTiles: 10
   TilePrefab: {fileID: 8456296939182147124, guid: 568ea8fde29b30846b7d03ada9ca0fa3, type: 3}
-  RandomSeed: 1
+  RandomSeed: 0
   PathGeneration: {fileID: 274265872}
   GeneratedTiles: []
 --- !u!4 &179994947

@@ -51,9 +51,24 @@ public class PlayerMovement : MonoBehaviour
         // Applying movement and speed
         transform.position += movement * Time.deltaTime * MoveSpeed;
 
+        // Jumping will apply a force to the player
         if (Input.GetKeyDown(KeyCode.Space) && OnGround)
         {
             Rigidbody.velocity = Vector3.up * JumpForce;
+        }
+
+        // Game control
+        int index = SceneManager.GetActiveScene().buildIndex; // current scene index
+
+        // Reload current scene
+        if (Input.GetKeyDown(KeyCode.R)) 
+        {
+            SceneManager.LoadScene(index);
+        }
+        // Move to the next scene
+        else if (Input.GetKeyDown(KeyCode.Return)) 
+        {
+            SceneManager.LoadScene(index + 1);
         }
     }
 
@@ -62,7 +77,7 @@ public class PlayerMovement : MonoBehaviour
         if (collision.collider.gameObject.name == "Goal")
         {
             Debug.Log("You reached the goal!");
-
+            // Move to the next scene
             int index = SceneManager.GetActiveScene().buildIndex;
             SceneManager.LoadScene(index + 1);
         }

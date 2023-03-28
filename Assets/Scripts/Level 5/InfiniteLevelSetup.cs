@@ -23,9 +23,14 @@ public class InfiniteLevelSetup : MonoBehaviour
             RaycastHit playerSpawnHit;
             if (Physics.Raycast(playerSpawnLocation, Vector3.down, out playerSpawnHit, SpawnCheckHeight + 1f))
             {
-                Player.transform.position = playerSpawnHit.point + Vector3.up * 2f;
+                Player.transform.position = playerSpawnHit.point + Vector3.up * (SpawnCheckHeight / 2f);
                 PlayerLoaded = true;
             }
+        }
+
+        // respawn the player if they fall off the map
+        if (PlayerLoaded && Player.transform.position.y < -1f) {
+            PlayerLoaded = false;
         }
     }
 }

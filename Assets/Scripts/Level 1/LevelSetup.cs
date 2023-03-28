@@ -25,9 +25,14 @@ public class LevelSetup : MonoBehaviour
             RaycastHit playerSpawnHit;
             if (Physics.Raycast(playerSpawnLocation, Vector3.down, out playerSpawnHit, SpawnCheckHeight + 1f))
             {
-                Player.transform.position = playerSpawnHit.point + Vector3.up * 2f;
+                Player.transform.position = playerSpawnHit.point + Vector3.up * (SpawnCheckHeight / 2f);
                 PlayerLoaded = true;
             }
+        }
+
+        // respawn the player if they fall off the map
+        if (PlayerLoaded && Player.transform.position.y < -1f) {
+            PlayerLoaded = false;
         }
 
         if (!GoalLoaded)
@@ -39,6 +44,17 @@ public class LevelSetup : MonoBehaviour
                 Goal.transform.position = goalSpawnHit.point + Vector3.up;
                 GoalLoaded = true;
                 GoalCollider.enabled = true;
+            }
+        }
+
+        // as the game runs continue to raycast to check for the goal to prevent it from getting embedded in the ground
+        if (GoalLoaded) 
+        {
+            Vector3 goalSpawnLocation = new Vector3((LevelGeneration.GetMapWidth() - 1) * LevelGeneration.GetTileWidth(), SpawnCheckHeight, (LevelGeneration.GetMapDepth() - 1) * LevelGeneration.GetTileDepth());
+            RaycastHit goalSpawnHit;
+            if (Physics.Raycast(goalSpawnLocation, Vector3.down, out goalSpawnHit, SpawnCheckHeight + 1f))
+            {
+                GoalLoaded = goalSpawnHit.collider.gameObject.name == Goal.name;
             }
         }
     }
