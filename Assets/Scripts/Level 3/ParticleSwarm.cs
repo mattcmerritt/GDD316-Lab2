@@ -27,6 +27,5 @@ public class ParticleSwarm : MonoBehaviour
                 transform.position += directionToPlayer * Time.deltaTime * MoveSpeed;
             }
         }
-        
     }
 }

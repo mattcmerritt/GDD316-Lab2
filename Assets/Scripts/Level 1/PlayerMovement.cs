@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -12,6 +13,10 @@ public class PlayerMovement : MonoBehaviour
     // Camera information
     [SerializeField] private GameObject CameraObject;
     private float HorizontalRotation;
+
+    // Damage overlay
+    [SerializeField] private Image DamageIndicator;
+    [SerializeField] private Animator DamageUIAnimator;
 
     private void Awake()
     {
@@ -56,6 +61,8 @@ public class PlayerMovement : MonoBehaviour
         if (other.gameObject.name == "Smoke")
         {
             Debug.Log("You are getting hurt!");
+
+            DamageUIAnimator.SetTrigger("Start Damage");
         }
     }
 
@@ -72,6 +79,8 @@ public class PlayerMovement : MonoBehaviour
         if (other.gameObject.name == "Smoke")
         {
             Debug.Log("You escaped!");
+
+            DamageUIAnimator.SetTrigger("End Damage");
         }
     }
 }
