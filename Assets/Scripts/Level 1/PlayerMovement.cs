@@ -50,4 +50,28 @@ public class PlayerMovement : MonoBehaviour
             Debug.Log("You reached the goal!");
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.name == "Smoke")
+        {
+            Debug.Log("You are getting hurt!");
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.name == "Smoke")
+        {
+            Debug.Log("You are still getting hurt!");
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.name == "Smoke")
+        {
+            Debug.Log("You escaped!");
+        }
+    }
 }
